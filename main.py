@@ -3,10 +3,8 @@ import pandas as pd
 from xgboost import XGBRegressor
 
 st.set_page_config(page_title="SCM Strength Estimator", layout="centered")
+st.title("SCM-Based NFC Strength Estimator")
 
-st.title("🧱 SCM-Based NFC Strength Estimator")
-
-# ---------------- Note Section ---------------- #
 with st.expander("📘 Note", expanded=True):
     st.markdown("""
     **Recommended SCM quantity limits based on research findings:**
@@ -19,7 +17,6 @@ with st.expander("📘 Note", expanded=True):
     ⚠️ Exceeding these limits may negatively impact compressive strength.
     """)
 
-# ---------------- Input Fields ---------------- #
 cement_content = st.number_input("Enter Cement content (in kg/m³):", min_value=300.0, value=410.0, step=10.0)
 
 scm_selected = st.selectbox(
@@ -43,14 +40,12 @@ scm_value = st.number_input(
 
 curing_age = st.number_input("Specify curing age (in days):", min_value=1, value=7, step=1)
 
-# ---------------- Load Model ---------------- #
 @st.cache_resource
 def load_model():
     df = pd.read_excel("Results_AI.xlsx")
     X = df[["Cement", "Fly ash", "Metakaolin", "Silica Fume", "Rice Husk Ash", "Curing age"]]
     y = df["Compressive Strength"]
     
-    # Use Optuna's best parameters
     model = XGBRegressor(
         n_estimators=285,
         max_depth=9,
@@ -68,7 +63,6 @@ def load_model():
 
 model = load_model()
 
-# ---------------- Prediction ---------------- #
 input_features = {
     "Cement": cement_content,
     "Fly ash": scm_value if scm_selected == "Fly ash" else 0.0,
